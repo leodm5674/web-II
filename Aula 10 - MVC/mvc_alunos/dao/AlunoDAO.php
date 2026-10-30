@@ -68,6 +68,53 @@ class AlunoDAO
         return "";
     }
 
+
+    public function buscarPorId(int $id)
+    {
+
+        $sql = "SELECT a.*, 
+                    c.nome nome_curso, c.turno turno_curso  
+                FROM alunos a
+                JOIN cursos c ON (c.id = a.id_curso)
+                WHERE a.id = ?";
+        $conn = Connection::getConnection();
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$id]);
+        $result = $stmt->fetchAll();
+
+        //Criar o objeto Aluno
+        $alunos = $this->map($result);
+
+        if (count($alunos) == 1)
+            return $alunos[0];
+        elseif (count($alunos) == 0)
+            return null;
+
+        die("AlunoDAO.buscarPorId - Erro: mais de um aluno" .
+            " encontrado para o ID " . $id);
+    }
+
+    public function alterar(Aluno $aluno) {
+        $conn = Connection::getConnection();
+
+        $sql = "UPDATE alunos 
+                SET nome = ?, idade = ?, estrangeiro = ?, id_curso = ?
+                WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        
+        try {
+            $stmt->execute([$aluno->getNome(), $aluno->getIdade(), 
+                            $aluno->getEstrangeiro(), $aluno->getCurso()->getId(),
+                            $aluno->getId()]);
+        } catch (PDOException $e) {
+            return "Erro ao alterar o aluno! " . $e->getMessage();
+        }
+
+        return "";
+    }
+
+
     public function map(array $dados)
     {
         $alunos = array();
