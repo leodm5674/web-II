@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
 use App\Controller\ClubeController;
+use App\Model\Clube;
 use Slim\Exception\HttpNotFoundException;
 
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -25,8 +26,8 @@ $app->get('/', function (Request $request, Response $response, $args) {
     return $response;
 });
 
-$app->get("/ola/{nome}", function (Request $request, Response $response, $args){
-        $nome = $args["nome"];
+$app->get("/ola/{nome}", function (Request $request, Response $response, $args) {
+    $nome = $args["nome"];
 
 
 
@@ -35,20 +36,19 @@ $app->get("/ola/{nome}", function (Request $request, Response $response, $args){
     $response->getBody()->write("<br> Seja bem Vindo " . $nome);
 
     return $response;
-
 });
 
-$app->get("/ola2", function (Request $request, Response $response, $args){
+$app->get("/ola2", function (Request $request, Response $response, $args) {
     $parametros = $request->getQueryParams();
     $nome = "";
 
 
-    if(isset($parametros['nome']))
+    if (isset($parametros['nome']))
         $nome = $parametros['nome'];
 
-    if($nome)
-            $response->getBody()->write("Obrigado pelo acesso " . $nome );
-    else 
+    if ($nome)
+        $response->getBody()->write("Obrigado pelo acesso " . $nome);
+    else
         $response->getBody()->write("Obrigado pelo acesso");
 
     return $response;
@@ -57,7 +57,10 @@ $app->get("/ola2", function (Request $request, Response $response, $args){
 //clubes
 
 $app->get("/clubes", ClubeController::class . ":listar");
-
+$app->get("/clubes/{id}", ClubeController::class . ":buscar");
+$app->post("/clubes", ClubeController::class . ":inserir");
+$app->put("/clubes", ClubeController::class . ":alterar");
+$app->delete("/clubes/{id}", ClubeController::class . ":excluir");
 
 
 //Tratamento para rota não encontrada
